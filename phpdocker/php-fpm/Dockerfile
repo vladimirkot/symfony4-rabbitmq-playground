@@ -6,5 +6,5 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Install selected extensions and other stuff
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install  php-memcached php7.3-mysql php7.3-pgsql php-redis php-yaml php-zmq \
+    && apt-get -y --no-install-recommends install  php-memcached php7.3-mysql php7.3-bcmath php-redis php-yaml php-zmq \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*

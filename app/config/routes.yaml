@@ -5,3 +5,7 @@
 rabbitmq-test:
     path: /rabbitmq-test
     controller: App\Controller\TestController::rabbitmqTest
+
+queues:
+    type: rest
+    resource: App\Controller\RabbitmqController

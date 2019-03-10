@@ -1,3 +1,84 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+
+    <div id="chart"></div>
+    <div>
+        <button id="stat-start">Statistics Start</button>
+        <button id="stat-stop">Statistics Stop</button>
+    </div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script type="text/javascript">
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+          var chart;
+
+          function drawChart() {
+
+            var headRow =  ['Time', 'Queue Length'];
+            var dataRows = [["1",0],["2",0],["3",0],["4",0],["5",0]];
+
+            dataRows.unshift(headRow);
+
+            var data = google.visualization.arrayToDataTable(dataRows);
+
+            var options = {
+                title: 'Company Performance',
+                //curveType: 'function',
+                legend: { position: 'bottom' }
+            };
+
+            chart = new google.visualization.LineChart(document.getElementById('chart'));
+
+            chart.draw(data, options);
+
+            document.addEventListener("chart-renew",function(e){
+
+                var passedValue = e.detail;
+
+                for(let i=1;i<5;i++){
+                    dataRows[i][1] = dataRows[i+1][1];
+                }
+
+                dataRows[5][1] = passedValue;
+
+                var data = google.visualization.arrayToDataTable(dataRows);
+
+                chart.draw(data, options);
+            });
+        }
+
+    </script>
+
+    <script>
+        (function() {
+        let getStatState = 0;
+
+        document.querySelector("#stat-start").addEventListener("click", function () {
+            getStatState = 1;
+            fetchStat()
+        });
+        document.querySelector("#stat-stop").addEventListener("click", function () {
+            getStatState = 0
+        });
+
+        function fetchStat() {
+            let url = 'http://localhost:8080/api/queue-stat/ppm-parse';
+
+            if (!getStatState) {
+                return;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(json => { console.log(json.queue_info);var event = new CustomEvent('chart-renew', { 'detail': parseInt(json.queue_info.messages) }); document.dispatchEvent(event); })
+                .then(fetchStat);
+        };
+
+    })();
+
+
+    </script>
 {% endblock %}
