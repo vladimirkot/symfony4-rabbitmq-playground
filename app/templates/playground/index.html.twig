@@ -6,7 +6,9 @@
         <button id="stat-start">Statistics Start</button>
         <button id="stat-stop">Statistics Stop</button>
         <br>
-        <button id="send-messages">Send Messages</button>
+        <button id="send-messages">Send Generated Messages</button>
+        <br>
+        <button id="process-messages">Process Messages</button>
     </div>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -79,6 +81,11 @@
                 fetch(url);
             }
 
+            function processMessages(){
+                let url = "http://localhost:8080/api/queue-process-msg/5";
+                fetch(url);
+            }
+
             document.querySelector("#stat-start").addEventListener("click", function () {
                 getStatState = 1;
                 fetchStat()
@@ -88,6 +95,8 @@
             });
 
             document.querySelector("#send-messages").addEventListener("click", sendMessages);
+
+            document.querySelector("#process-messages").addEventListener("click", processMessages);
 
     })();
 

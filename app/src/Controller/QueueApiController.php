@@ -13,6 +13,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\View\View;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use GuzzleHttp\Exception\ClientException;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * @Route("/api")
@@ -72,6 +76,34 @@ class QueueApiController extends AbstractFOSRestController
 
         $view = View::create();
         $view->setData(["sent"=>$sentCnt]);
+
+        return $view;
+    }
+
+    /**
+     * @Route("/queue-process-msg/{amount}", name="queue_process_messages")
+     * @param int $amount
+     * @param KernelInterface $kernel
+     * @return View
+     */
+    public function queueProcessMessages(int $amount, KernelInterface $kernel)
+    {
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $input = new ArrayInput([
+            'command' => 'rabbitmq:consumer',
+            'name' => 'playground',
+            '-m' => $amount,
+        ]);
+
+        $output = new BufferedOutput();
+        $application->run($input, $output);
+
+        $content = $output->fetch();
+
+        $view = View::create();
+        $view->setData($content);
 
         return $view;
     }

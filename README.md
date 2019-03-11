@@ -1,4 +1,4 @@
-# symfony4-playground
+# symfony4-rabbitmq-playground
 
 Main interface with chart and controls - [localhost:8080](http://localhost:8080)
 

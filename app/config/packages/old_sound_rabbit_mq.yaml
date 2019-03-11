@@ -3,13 +3,12 @@ old_sound_rabbit_mq:
         default:
             url: '%env(RABBITMQ_URL)%'
     producers:
-#        # use 'old_sound_rabbit_mq.task_producer' service to send data.
-        testing:
+        playground:
             connection:       default
             exchange_options: { name: 'ppm-parse', type: direct }
-#    consumers:
-#        task:
-#            connection:       default
-#            exchange_options: { name: 'task', type: direct }
-#            queue_options:    { name: 'task'}
-#            callback:         App\Consumer\TaskConsumer
+    consumers:
+        playground:
+            connection:       default
+            exchange_options: { name: 'ppm-parse', type: direct }
+            queue_options:    { name: 'ppm-parse'}
+            callback:         App\Consumer\PlaygroundConsumer
