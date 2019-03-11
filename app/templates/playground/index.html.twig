@@ -19,14 +19,16 @@
 
           function drawChart() {
 
-            var headRow =  ['Time', 'Queue Length'];
+            var headRow =  [['Time', 'Queue Length']];
             var dataRows = [["1",0],["2",0],["3",0],["4",0],["5",0]];
 
-            dataRows.unshift(headRow);
+            //dataRows.unshift(headRow);
 
-            var data = google.visualization.arrayToDataTable(dataRows);
+            var data = google.visualization.arrayToDataTable(headRow.concat(dataRows));
 
-            var options = {
+              console.log("headRow:",headRow);
+
+              var options = {
                 title: 'RabbitMQ Queue stats',
                 //curveType: 'function',
                 legend: { position: 'bottom' }
@@ -38,15 +40,14 @@
 
             document.addEventListener("chart-renew",function(e){
 
-                var passedValue = e.detail;
+                let passedValue = e.detail;
+                let date = new Date();
+                let currTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(11,19);
 
-                for(let i=1;i<5;i++){
-                    dataRows[i][1] = dataRows[i+1][1];
-                }
+                dataRows.shift();
+                dataRows.push([currTime, passedValue]);
 
-                dataRows[5][1] = passedValue;
-
-                var data = google.visualization.arrayToDataTable(dataRows);
+                var data = google.visualization.arrayToDataTable(headRow.concat(dataRows));
 
                 chart.draw(data, options);
             });
