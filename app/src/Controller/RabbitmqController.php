@@ -12,6 +12,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\View\View;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * @Route("/api")
@@ -25,12 +26,23 @@ class RabbitmqController extends AbstractFOSRestController
     public function queueStat(string $name)
     {
         $client = new \GuzzleHttp\Client();
-        $response = $client->get('http://rabbitmq:15672/api/queues/%2f/' . $name, [
-            'auth' => [
-                'rbtmq_user',
-                'rbtmq111'
-            ]
-        ]);
+        $auth = [
+            'rbtmq_user',
+            'rbtmq111'
+        ];
+
+        $url = 'http://rabbitmq:15672/api/queues/%2f/' . $name;
+
+        try{
+
+            $response = $client->get($url, ['auth' => $auth]);
+        }
+        catch (ClientException $e)
+        {
+            $this->initDataItems($name);
+            $response = $client->get($url, ['auth' => $auth]);
+        }
+
 
         $view = View::create();
         $view->setData(["queue_info"=>json_decode($response->getBody()->getContents(), true)]);
@@ -58,4 +70,33 @@ class RabbitmqController extends AbstractFOSRestController
         return $view;
     }
 
+
+    private function initDataItems(string $name)
+    {
+        $exchangeName = $name;
+        $queueName = $name;
+
+        $client = new \GuzzleHttp\Client();
+
+        $auth = [
+            'rbtmq_user',
+            'rbtmq111'
+        ];
+
+        $client->put('http://rabbitmq:15672/api/queues/%2f/' . $queueName, [
+            'body' => '{"auto_delete":false,"durable":true}',
+            'auth' => $auth
+        ]);
+
+        $client->put('http://rabbitmq:15672/api/exchanges/%2f/' . $exchangeName, [
+            'body' => '{"type":"direct","auto_delete":false,"durable":true,"internal":false,"arguments":{}}',
+            'auth' => $auth
+        ]);
+
+
+        $client->post("http://rabbitmq:15672/api/bindings/%2f/e/{$exchangeName}/q/{$queueName}", [
+            'body' => '{}',
+            'auth' => $auth
+        ]);
+    }
 }

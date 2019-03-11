@@ -1,9 +1,5 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
-
-rabbitmq-test:
-    path: /rabbitmq-test
+index:
+    path: /
     controller: App\Controller\TestController::rabbitmqTest
 
 queues:
