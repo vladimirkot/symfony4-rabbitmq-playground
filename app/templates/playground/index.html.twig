@@ -4,7 +4,7 @@
     <div id="chart"></div>
     <div>
         <button id="stat-start">Statistics Start</button>
-        <button id="stat-stop">Statistics Stop</button>
+        <button id="stat-stop" disabled="true">Statistics Stop</button>
         <br>
         <button id="send-messages">Send Generated Messages</button>
         <br>
@@ -61,6 +61,11 @@
 
         (function() {
 
+            var statStartEl = document.querySelector("#stat-start");
+            var statStopEl = document.querySelector("#stat-stop");
+            var sendMessagesEl = document.querySelector("#send-messages");
+            var processMessagesEl = document.querySelector("#process-messages");
+
             let getStatState = 0;
 
             function fetchStat() {
@@ -78,25 +83,35 @@
 
             function sendMessages(){
                 let url = "http://localhost:8080/api/queue-generate-msg/5";
-                fetch(url);
+
+                sendMessagesEl.disabled = true;
+                fetch(url).then( ()=>sendMessagesEl.disabled = false );
             }
 
             function processMessages(){
                 let url = "http://localhost:8080/api/queue-process-msg/5";
-                fetch(url);
+
+                processMessagesEl.disabled = true;
+                fetch(url).then( ()=>processMessagesEl.disabled = false );
             }
 
-            document.querySelector("#stat-start").addEventListener("click", function () {
+            statStartEl.addEventListener("click", function () {
                 getStatState = 1;
-                fetchStat()
-            });
-            document.querySelector("#stat-stop").addEventListener("click", function () {
-                getStatState = 0
+                fetchStat();
+
+                this.disabled = true;
+                statStopEl.disabled = false;
             });
 
-            document.querySelector("#send-messages").addEventListener("click", sendMessages);
+            statStopEl.addEventListener("click", function () {
+                getStatState = 0;
+                this.disabled = true;
+                statStartEl.disabled = false;
+            });
 
-            document.querySelector("#process-messages").addEventListener("click", processMessages);
+            sendMessagesEl.addEventListener("click", sendMessages);
+
+            processMessagesEl.addEventListener("click", processMessages);
 
     })();
 
