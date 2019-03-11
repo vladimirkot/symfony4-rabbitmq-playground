@@ -11,13 +11,13 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
-class TestController extends AbstractController
+class PlaygroundController extends AbstractController
 {
-    public function rabbitmqTest()
+    public function index()
     {
 
         dump(getenv());
 
-        return $this->render("test/rabbitmq_test.html.twig",[]);
+        return $this->render("playground/index.html.twig");
     }
 }

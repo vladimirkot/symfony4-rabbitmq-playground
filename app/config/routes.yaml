@@ -1,7 +1,3 @@
 index:
     path: /
-    controller: App\Controller\TestController::rabbitmqTest
-
-queues:
-    type: rest
-    resource: App\Controller\RabbitmqController
+    controller: App\Controller\PlaygroundController::index

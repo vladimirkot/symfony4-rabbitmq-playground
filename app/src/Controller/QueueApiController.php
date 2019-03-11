@@ -17,13 +17,15 @@ use GuzzleHttp\Exception\ClientException;
 /**
  * @Route("/api")
  */
-class RabbitmqController extends AbstractFOSRestController
+class QueueApiController extends AbstractFOSRestController
 {
     /**
      * @Route("/queue-stat/{name}", name="get_queue_stat")
+     * @var string $name - queue name
+     * @return View
      */
 
-    public function queueStat(string $name)
+    public function queueStat(string $name):View
     {
         $client = new \GuzzleHttp\Client();
         $auth = [
@@ -52,6 +54,10 @@ class RabbitmqController extends AbstractFOSRestController
 
     /**
      * @Route("/queue-generate-msg/{amount}", name="queue_generate_messages")
+     * @var int $amount - amount of messages to generate
+     * @var ProducerInterface $producer - producer service instance
+     * @return View
+     * @throws
      */
     public function queueGenerateMessages(int $amount, ProducerInterface $producer)
     {
@@ -70,7 +76,9 @@ class RabbitmqController extends AbstractFOSRestController
         return $view;
     }
 
-
+    /**
+     * @param string $name - common name for new created exchange and queue that binds to exchange
+     */
     private function initDataItems(string $name)
     {
         $exchangeName = $name;
